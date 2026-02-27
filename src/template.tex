@@ -1,0 +1,124 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{moreverb}
+\usepackage{pgffor}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{PGP Key Backup}
+\lhead{Key Name: __KEYNAME__; ID: __KEYID__}
+\cfoot{\thepage}
+
+% \newcommand{\qrcount}{__QRCOUNT__}
+\newcount\qrcount
+\qrcount=__QRCOUNT__ 
+
+\newcount\revqrcount
+\revqrcount=__REVQRCOUNT__ 
+
+\newif\ifrevocation
+__REVOCATIONFLAG__
+
+\begin{document}
+
+\section*{PGP Key Backup}
+\textbf{This document contains a private cryptographic key. Handle accordingly.} \\
+\textbf{In case you found this document:} 
+Please do not attempt to decrypt it. 
+The key is secured with a passphrase and additional encryption. 
+You will not be able to gain any information from this document.\\
+I would greatly appreciate its return. 
+Please contact me at the email address below. \\
+\begin{itemize}
+    \item \textbf{Owner:} __NAME__ 
+    \item \textbf{Email:} __EMAIL__ 
+    \item \textbf{Created:} __DATECREATED__
+    \item \textbf{Expires:} __DATEEXPIRES__ 
+    \item \textbf{Key ID:} \verb|__KEYID__|
+    \item \textbf{Fingerprint:} \\
+          \verb|__FINGERPRINT__| 
+    \item \textbf{SHA256 (__KEYFILENAME__):} \\
+          \verb|__CHECKSUM__| 
+\end{itemize}
+
+\subsubsection*{Instructions}
+\begin{enumerate}
+    \item Install GnuPG (version $\geq$ 2.4.4)
+    \item Reassemble key (copy ASCII or scan all QR--codes) into file named \textbf{__KEYFILENAME__}
+    \item Verify that SHA256 matches: \verb|sha256sum __KEYFILENAME__|
+    \item Import into gpg: \verb!gpg --decrypt __KEYFILENAME__ | gpg --import! \\
+    Symmetric Passphrase hint: __HINT__
+\end{enumerate}
+
+\ifrevocation % begin optional block - only available if revocation is set
+\subsection*{Revocation}
+\textbf{ONLY USE IN CASE THE KEY IS COMPROMISED}
+
+\begin{itemize}
+    \item \textbf{SHA256 (__REVFILENAME__):} \\
+          \verb|__REVCHECKSUM__| 
+\end{itemize}
+
+\subsubsection*{Instructions}
+\begin{enumerate}
+    \item Install GnuPG (version $\geq$ 2.4.4)
+    \item Reassemble key (copy ASCII or scan all QR--codes) into file named \textbf{__REVFILENAME__}
+    \item Verify that SHA256 matches: \verb|sha256sum __REVFILENAME__|
+    \item Import into gpg: \verb!gpg --decrypt __REVFILENAME__ | gpg --import! \\
+    Symmetric Passphrase hint: __HINT__
+    \item Import on all devices (to avoid accidental usage later)
+    \item Publish everywhere, where public keys were distributed
+\end{enumerate}
+\fi % end optional block
+
+\pagebreak
+
+\section*{Key Backup -- ASCII}
+{\small
+\linespread{0.9}\selectfont
+\verbatiminput{__KEYFILENAME__}
+}
+
+\pagebreak
+
+\section*{Key Backup -- QR--Codes (__QRCOUNT__ total)}
+
+\begin{center}
+\foreach \n in {1,...,\the\qrcount}{
+	\includegraphics[width=0.45\textwidth]{qr_chunks/qr_chunk_\n.png}
+	\ifnum\numexpr\n-2*(\n/2)\relax=0
+		\\[1em]
+	\else
+		\hfill
+	\fi
+}
+\end{center}
+
+\ifrevocation % begin optional block - only available if revocation is set
+
+\pagebreak
+
+\section*{Key Revocation -- ASCII}
+\verbatiminput{__REVFILENAME__}
+
+\pagebreak
+
+\section*{Key Revocation -- QR--Codes (__REVQRCOUNT__ total)}
+\begin{center}
+\foreach \n in {1,...,\the\revqrcount}{
+	\includegraphics[width=0.45\textwidth]{qr_chunks_rev/qr_chunk_\n.png}
+	\ifnum\numexpr\n-2*(\n/2)\relax=0
+		\\[1em]
+	\else
+		\hfill
+	\fi
+}
+\end{center}
+
+\fi % end optional block
+
+\end{document}
+

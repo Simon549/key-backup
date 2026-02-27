@@ -1,0 +1,13 @@
+# Security - to never push keys accidentally
+*.asc
+*.gpg
+*.zip
+*.pdf
+*.docx
+
+# Do not include font types
+*.ttf
+
+# Irrelevant data
+qr_chunks*
+venv
